@@ -2,9 +2,8 @@ mod message;
 mod message_handler;
 mod redis_publisher;
 mod redis_subscriber;
-
+use std::time::Duration;
 extern crate redis;
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("service started");
@@ -15,21 +14,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         println!("connected to queue");
     }
+    std::thread::sleep(Duration::from_secs(1));
+    let mut i = 0;
+    while i <= 10 {
+        println!("begin to publish message {}", i);
+        redis_publisher::publish_message(message::Message::new(message::Order::new(
+            "T-Shirt".to_string(),
+            3,
+            24.0,
+        )))?;
+        redis_publisher::publish_message(message::Message::new(message::Order::new(
+            "Sneakers".to_string(),
+            1,
+            230.0,
+        )))?;
+        redis_publisher::publish_message(message::Message::new(message::Order::new(
+            "Milka Bar".to_string(),
+            10,
+            50.0,
+        )))?;
 
-    redis_publisher::publish_message(message::Message::new(
-        message::Order::new("T-Shirt".to_string(), 
-        3, 
-        24.0)))?;
-    redis_publisher::publish_message(message::Message::new(
-        message::Order::new("Sneakers".to_string(), 
-        1, 
-        230.0)))?;
-    redis_publisher::publish_message(message::Message::new(
-        message::Order::new("Milka Bar".to_string(), 
-        10, 
-        50.0)))?;
-    
-    println!("published");
+        println!("published {}", i);
+        std::thread::sleep(Duration::from_secs(1));
+        i = i + 1;
+    }
 
     Ok(())
 }

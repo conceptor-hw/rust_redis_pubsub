@@ -1,5 +1,5 @@
 [package]
-name = "event_redis"
+name = "redis_pubsub"
 version = "0.1.0"
 authors = ["Paolo Posso <pvictorsys@gmail.com>"]
 edition = "2018"
