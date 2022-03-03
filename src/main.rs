@@ -8,7 +8,7 @@ extern crate redis;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("service started");
 
-    if let Err(error) = redis_subscriber::subscribe(String::from("order")) {
+    if let Err(error) = redis_subscriber::subscribe(String::from("go_channel")) {
         println!("{:?}", error);
         panic!("{:?}", error);
     } else {
@@ -16,25 +16,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     std::thread::sleep(Duration::from_secs(1));
     let mut i = 0;
-    while i <= 10 {
-        println!("begin to publish message {}", i);
-        redis_publisher::publish_message(message::Message::new(message::Order::new(
-            "T-Shirt".to_string(),
-            3,
-            24.0,
-        )))?;
-        redis_publisher::publish_message(message::Message::new(message::Order::new(
-            "Sneakers".to_string(),
-            1,
-            230.0,
-        )))?;
-        redis_publisher::publish_message(message::Message::new(message::Order::new(
-            "Milka Bar".to_string(),
-            10,
-            50.0,
-        )))?;
+    while i <= 10000 {
+        redis_publisher::publish_message(message::Message::new(
+            message::Order::new("message from rust".to_string(), 0, i),
+            "rust_channel".to_string(),
+        ))?;
 
-        println!("published {}", i);
         std::thread::sleep(Duration::from_secs(1));
         i = i + 1;
     }

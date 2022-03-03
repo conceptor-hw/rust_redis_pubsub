@@ -1,19 +1,19 @@
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Message {
     pub id: String,
     pub channel: String,
-    pub payload: Order
+    pub payload: Order,
 }
 
 impl Message {
-    pub fn new(payload: Order) -> Message {
+    pub fn new(payload: Order, channel: String) -> Message {
         Message {
             id: Message::generate_id(),
-            channel: String::from("order"),
-            payload
+            channel,
+            payload,
         }
     }
 
@@ -24,13 +24,17 @@ impl Message {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Order {
-    description: String,
-    quantity: u16,
-    total_price: f32
+    pub description: String,
+    pub quantity: u64,
+    pub index: i32,
 }
 
 impl Order {
-    pub fn new(description: String, quantity: u16, total_price: f32) -> Order {
-        Order { description, quantity, total_price }
+    pub fn new(description: String, quantity: u64, index: i32) -> Order {
+        Order {
+            description,
+            quantity,
+            index,
+        }
     }
 }
