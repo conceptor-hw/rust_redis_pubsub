@@ -1,7 +1,7 @@
 extern crate redis;
-
-use crate::message::Message;
+use crate::message::ProverMessage;
 use crate::message_handler;
+use bincode;
 use redis::{ControlFlow, PubSubCommands};
 use std::error::Error;
 
@@ -12,10 +12,12 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
 
         let _: () = con
             .subscribe(&[channel], |msg| {
-                let received: String = msg.get_payload().unwrap();
-                let message_obj = serde_json::from_str::<Message>(&received).unwrap();
-
-                message_handler::handle(message_obj);
+                // let received: String = msg.get_payload().unwrap();
+                // let message_obj = serde_json::from_str::<PubSubMessage>(&received).unwrap();
+                let paylaod = msg.get_payload_bytes();
+                let message_obj: ProverMessage = bincode::deserialize(paylaod).unwrap();
+                println!("subcribe message from go channel....{:?}", message_obj);
+                // message_handler::handle(message_obj);
 
                 return ControlFlow::Continue;
             })
@@ -24,3 +26,13 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+// pub fn start() {
+//     // start subscribe for redis
+//     if let Err(error) = subscribe(String::from("go_channel")) {
+//         println!("subscribe something was wrong{:?}", error);
+//         panic!("{:?}", error);
+//     } else {
+//         println!("connected to queue");
+//     }
+// }

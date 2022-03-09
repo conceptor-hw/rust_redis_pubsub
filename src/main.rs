@@ -16,12 +16,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     std::thread::sleep(Duration::from_secs(1));
     let mut i = 0;
-    while i <= 10000 {
-        redis_publisher::publish_message(message::Message::new(
-            message::Order::new("message from rust".to_string(), 0, i),
-            "rust_channel".to_string(),
-        ))?;
 
+    while i <= 10000 {
+        redis_publisher::publish_message(
+            "rust_channel" as &str,
+            message::ProverMessage::new(i as u32, i as i64, i as u64),
+        )?;
         std::thread::sleep(Duration::from_secs(1));
         i = i + 1;
     }
