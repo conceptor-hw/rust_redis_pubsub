@@ -67,3 +67,30 @@ impl Order {
         }
     }
 }
+
+pub const SUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_for_pool";
+pub const PUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_pool";
+
+//订阅发布submit 与提交submit result
+#[derive(Debug, Serialize, Deserialize, Clone)]
+// pub struct ProveSpecMessage<'a> {
+//     pub prover_id: String,
+//     pub info: &'a [u8],
+// }
+
+// impl<'a>  ProveSpecMessage<'a> {
+//     pub fn new(id: String, msg:&'a [u8]) ->ProveSpecMessage<'a> {
+//         ProveSpecMessage { prover_id: id, info: msg}
+//     }
+// }
+
+pub struct ProveSpecMessage<'a> {
+    pub prover_id: String,
+    pub info: &'a [u8],
+}
+
+impl<'a>  ProveSpecMessage<'a> {
+    pub fn new(id: String, msg:&'a [u8]) ->ProveSpecMessage<'a> {
+        ProveSpecMessage { prover_id: id, info: msg}
+    }
+}

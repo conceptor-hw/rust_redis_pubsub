@@ -2,12 +2,13 @@ extern crate redis;
 // use crate::message;
 use crate::message::ProverMessage;
 use crate::message::PubSubMessage;
+use crate::{message,message_handler};
+use crate::message::ProveSpecMessage;
 // use crate::message_handler;
 use bincode;
 use redis::{ControlFlow, PubSubCommands};
 use std::error::Error;
 
-pub fn handle_message_for_binnary_channel() {}
 pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
     let _ = tokio::spawn(async move {
         let client = redis::Client::open("redis://localhost:6379").unwrap();
@@ -31,6 +32,14 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
                         let message_obj = serde_json::from_str::<PubSubMessage>(&received).unwrap();
                         println!("subcribe message 22222222....{:?}", message_obj);
                         // message_handler::handle(message_obj);
+                    }
+                    message::SUB_PROVER_SPEC_MESSAGE => {
+                        let paylaod:&[u8] = msg.get_payload_bytes();
+                        println!("recv binnary data is {:?}",paylaod);
+                        let message_obj: ProveSpecMessage = bincode::deserialize(paylaod).unwrap();
+                        let prover_id = message_obj.prover_id;
+                        let prover_msg: ProverMessage = bincode::deserialize(message_obj.info).unwrap();
+                        println!("prover spec message is {} {:?}",prover_id, prover_msg);
                     }
                     _ => println!("something may be wrong..."),
                 }
