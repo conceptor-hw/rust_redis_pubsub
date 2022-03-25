@@ -19,10 +19,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut i = 0;
 
     while i <= 10000 {
-        redis_publisher::publish_submit_result_message(
-            "test prover id from pool server".to_string(),
-            message::ProverMessage::new(i as u32, i as i64, i as u64),
-        )?;
+        // redis_publisher::publish_submit_result_message(
+        //     "test prover id from pool server".to_string(),
+        //     message::ProverMessage::new(i as u32, i as i64, i as u64),
+        // )?;
 
         std::thread::sleep(Duration::from_secs(1));
         i = i + 1;

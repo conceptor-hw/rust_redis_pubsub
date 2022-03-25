@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use std::string::ToString;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProverMessage {
@@ -23,6 +24,13 @@ impl ProverMessage {
         Uuid::new_v4().to_simple().to_string()
     }
 }
+
+// impl fmt::Display for ProverMessage {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         write!(f, "({}, {})", self.previous_block_hash, self.block_height,self.block_timestamp, self.difficulty_target)
+//     }
+// }
+
 
 pub const SUB_BINARY_CHANNEL: &str = "binary_channel_schedule";
 pub const PUB_BINARY_CHANNEL: &str = "binary_channel_prover";
@@ -71,26 +79,24 @@ impl Order {
 pub const SUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_for_pool";
 pub const PUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_pool";
 
-//订阅发布submit 与提交submit result
-#[derive(Debug, Serialize, Deserialize, Clone)]
-// pub struct ProveSpecMessage<'a> {
-//     pub prover_id: String,
-//     pub info: &'a [u8],
-// }
-
-// impl<'a>  ProveSpecMessage<'a> {
-//     pub fn new(id: String, msg:&'a [u8]) ->ProveSpecMessage<'a> {
-//         ProveSpecMessage { prover_id: id, info: msg}
-//     }
-// }
-
-pub struct ProveSpecMessage<'a> {
-    pub prover_id: String,
-    pub info: &'a [u8],
+#[derive(EnumString, Display, Debug)]
+pub enum Colors {
+  Red,
+  Green
 }
 
-impl<'a>  ProveSpecMessage<'a> {
-    pub fn new(id: String, msg:&'a [u8]) ->ProveSpecMessage<'a> {
-        ProveSpecMessage { prover_id: id, info: msg}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ProveSpecMessage {
+    pub Prover_id: String,
+    pub Info: String,
+}
+
+impl ProveSpecMessage {
+    pub fn new(id: String, msg:String) ->ProveSpecMessage {
+        ProveSpecMessage { Prover_id: id, Info: msg}
     }
 }
+
+
+
+

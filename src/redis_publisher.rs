@@ -28,14 +28,14 @@ pub fn publish_normal_message(message: PubSubMessage) -> Result<(), Box<dyn Erro
     Ok(())
 }
 
-pub fn publish_submit_result_message(prover_id: String, msg: ProverMessage) -> Result<(), Box<dyn Error>> {
-    println!("publishing prover:{} submit result message to channel",prover_id);
-    let client = redis::Client::open("redis://localhost:6379")?;
-    let mut con = client.get_connection()?;
-    let _info = bincode::serialize(&msg).unwrap();
-    let pub_msg =ProveSpecMessage::new(prover_id, &_info);
-    let serial_data = bincode::serialize(&pub_msg).unwrap();
-    con.publish(message::PUB_PROVER_SPEC_MESSAGE, serial_data)?;
+// pub fn publish_submit_result_message(prover_id: String, msg: ProverMessage) -> Result<(), Box<dyn Error>> {
+//     println!("publishing prover:{} submit result message to channel",prover_id);
+//     let client = redis::Client::open("redis://localhost:6379")?;
+//     let mut con = client.get_connection()?;
+//     let _info = bincode::serialize(&msg).unwrap();
+//     let pub_msg =ProveSpecMessage::new(prover_id, &_info);
+//     let serial_data = bincode::serialize(&pub_msg).unwrap();
+//     con.publish(message::PUB_PROVER_SPEC_MESSAGE, serial_data)?;
 
-    Ok(())
-}
+//     Ok(())
+// }
