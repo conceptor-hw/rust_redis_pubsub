@@ -1,19 +1,24 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use std::string::ToString;
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProverMessage {
+use strum::Display;
+use strum::EnumString;
+use uuid::Uuid;
+#[derive(Debug, Serialize, Deserialize, EnumString)]
+pub struct BlockTemplate {
     previous_block_hash: String,
     block_height: u32,
     block_timestamp: i64,
     difficulty_target: u64,
 }
+#[derive(EnumString, Display, Debug, Serialize, Deserialize)]
+pub enum ProverMessage {
+    Notify(BlockTemplate, u64),
+}
 
-impl ProverMessage {
-    pub fn new(height: u32, timestamp: i64, difficulty: u64) -> ProverMessage {
-        ProverMessage {
-            previous_block_hash: ProverMessage::generate_id(),
+impl BlockTemplate {
+    pub fn new(height: u32, timestamp: i64, difficulty: u64) -> BlockTemplate {
+        BlockTemplate {
+            previous_block_hash: BlockTemplate::generate_id(),
             block_height: height,
             block_timestamp: timestamp,
             difficulty_target: difficulty,
@@ -25,12 +30,26 @@ impl ProverMessage {
     }
 }
 
+// impl ProverMessage {
+//     pub fn new(height: u32, timestamp: i64, difficulty: u64) -> ProverMessage {
+//         BlockTemplate {
+//             previous_block_hash: ProverMessage::generate_id(),
+//             block_height: height,
+//             block_timestamp: timestamp,
+//             difficulty_target: difficulty,
+//         }
+//     }
+
+//     fn generate_id() -> String {
+//         Uuid::new_v4().to_simple().to_string()
+//     }
+// }
+
 // impl fmt::Display for ProverMessage {
 //     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 //         write!(f, "({}, {})", self.previous_block_hash, self.block_height,self.block_timestamp, self.difficulty_target)
 //     }
 // }
-
 
 pub const SUB_BINARY_CHANNEL: &str = "binary_channel_schedule";
 pub const PUB_BINARY_CHANNEL: &str = "binary_channel_prover";
@@ -79,12 +98,6 @@ impl Order {
 pub const SUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_for_pool";
 pub const PUB_PROVER_SPEC_MESSAGE: &str = "prover_spec_msg_channel_pool";
 
-#[derive(EnumString, Display, Debug)]
-pub enum Colors {
-  Red,
-  Green
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProveSpecMessage {
     pub Prover_id: String,
@@ -92,11 +105,10 @@ pub struct ProveSpecMessage {
 }
 
 impl ProveSpecMessage {
-    pub fn new(id: String, msg:String) ->ProveSpecMessage {
-        ProveSpecMessage { Prover_id: id, Info: msg}
+    pub fn new(id: String, msg: String) -> ProveSpecMessage {
+        ProveSpecMessage {
+            Prover_id: id,
+            Info: msg,
+        }
     }
 }
-
-
-
-

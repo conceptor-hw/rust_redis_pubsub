@@ -1,9 +1,9 @@
 extern crate redis;
 // use crate::message;
+use crate::message::ProveSpecMessage;
 use crate::message::ProverMessage;
 use crate::message::PubSubMessage;
-use crate::{message,message_handler};
-use crate::message::ProveSpecMessage;
+use crate::{message, message_handler};
 // use crate::message_handler;
 use bincode;
 use redis::{ControlFlow, PubSubCommands};
@@ -22,7 +22,7 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
                     // from go transport pool server ProverMessage
                     "binary_channel_schedule" => {
                         let paylaod = msg.get_payload_bytes();
-                        let message_obj: ProverMessage = bincode::deserialize(paylaod).unwrap();
+                        let message_obj: ProveSpecMessage = bincode::deserialize(paylaod).unwrap();
                         println!("subcribe message 11111111111....{:?}", message_obj);
                         // message_handler::handle(message_obj);
                     }
@@ -43,9 +43,10 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
                     // }
                     message::SUB_PROVER_SPEC_MESSAGE => {
                         let received: String = msg.get_payload().unwrap();
-                        println!("prover spec message is {:?}",received);
-                        let message_obj = serde_json::from_str::<ProveSpecMessage>(&received).unwrap();
-                        println!("prover spec message is {:?}",message_obj);
+                        println!("prover spec message is {:?}", received);
+                        let message_obj =
+                            serde_json::from_str::<ProveSpecMessage>(&received).unwrap();
+                        println!("prover spec message is {:?}", message_obj);
                     }
                     _ => println!("something may be wrong..."),
                 }

@@ -8,11 +8,15 @@ extern crate redis;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("service started");
 
-    if let Err(error) =  redis_subscriber::subscribe(String::from(message::SUB_PROVER_SPEC_MESSAGE)) {
+    if let Err(error) = redis_subscriber::subscribe(String::from(message::SUB_PROVER_SPEC_MESSAGE))
+    {
         println!("{:?}", error);
         panic!("{:?}", error);
     } else {
-        println!("connected to queue subscribe {:?}", message::SUB_PROVER_SPEC_MESSAGE);
+        println!(
+            "connected to queue subscribe {:?}",
+            message::SUB_PROVER_SPEC_MESSAGE
+        );
     }
 
     std::thread::sleep(Duration::from_secs(1));
@@ -24,6 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         //     message::ProverMessage::new(i as u32, i as i64, i as u64),
         // )?;
 
+        redis_publisher::publist_prover_message()?;
         std::thread::sleep(Duration::from_secs(1));
         i = i + 1;
     }
