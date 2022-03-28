@@ -2,7 +2,7 @@ extern crate redis;
 use crate::message;
 use crate::message::ProveSpecMessage;
 use crate::message::ProverMessage;
-use crate::message::PubSubMessage;
+
 use bincode;
 use redis::Commands;
 use std::error::Error;
@@ -17,26 +17,25 @@ pub fn publish_message(channel: &str, message: ProverMessage) -> Result<(), Box<
     Ok(())
 }
 
-pub fn publish_normal_message(message: PubSubMessage) -> Result<(), Box<dyn Error>> {
-    let client = redis::Client::open("redis://localhost:6379")?;
-    let mut con = client.get_connection()?;
+// pub fn publish_normal_message(message: PubSubMessage) -> Result<(), Box<dyn Error>> {
+//     let client = redis::Client::open("redis://localhost:6379")?;
+//     let mut con = client.get_connection()?;
 
-    let json = serde_json::to_string(&message)?;
+//     let json = serde_json::to_string(&message)?;
 
-    con.publish(message.channel, json)?;
+//     con.publish(message.channel, json)?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
 pub fn publist_prover_message() -> Result<(), Box<dyn Error>> {
     let client = redis::Client::open("redis://localhost:6379")?;
     let mut con = client.get_connection()?;
 
-    let spe_msg: String =
-        ProverMessage::Notify(message::BlockTemplate::new(110, 110, 1220), (0)).to_string();
-    println!("povemessage to string is{}", spe_msg);
-
-    let serial_data = bincode::serialize(&spe_msg).unwrap();
+    let spe_msg =
+    ProverMessage::Notify(message::BlockTemplate::new(110, 110, 1220), 0);
+    println!("+++++ publish prover message hash{:?} +++++++", spe_msg);
+    let serial_data = serde_json::to_string(&spe_msg)?;
     con.publish(message::PUB_BINARY_CHANNEL, serial_data)?;
 
     Ok(())
