@@ -8,14 +8,14 @@ extern crate redis;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("service started");
 
-    if let Err(error) = redis_subscriber::subscribe(String::from(message::SUB_PROVER_SPEC_MESSAGE))
+    if let Err(error) = redis_subscriber::subscribe(String::from(message::SUB_BINARY_CHANNEL))
     {
         println!("{:?}", error);
         panic!("{:?}", error);
     } else {
         println!(
             "connected to queue subscribe {:?}",
-            message::SUB_PROVER_SPEC_MESSAGE
+            message::SUB_BINARY_CHANNEL
         );
     }
 

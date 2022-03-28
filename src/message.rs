@@ -3,16 +3,27 @@ use std::string::ToString;
 use strum::Display;
 use strum::EnumString;
 use uuid::Uuid;
-#[derive(Debug, Serialize, Deserialize, EnumString)]
+use std::fmt;
+use std::fmt::Formatter;
+use std::fmt::Display;
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BlockTemplate {
     previous_block_hash: String,
     block_height: u32,
     block_timestamp: i64,
     difficulty_target: u64,
 }
-#[derive(EnumString, Display, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ProverMessage {
     Notify(BlockTemplate, u64),
+}
+
+impl Display for ProverMessage {
+    fn fmt(&self, f: &mut Formatter) ->  fmt::Result  {
+        match self {
+            ProverMessage::Notify(tmp,i) => write!(f, "{:?} {}", tmp,i),
+		}
+    }
 }
 
 impl BlockTemplate {
