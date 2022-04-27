@@ -8,8 +8,7 @@ use crate::{message, message_handler};
 use bincode;
 use redis::{ControlFlow, PubSubCommands};
 use std::error::Error;
-use std::io::Bytes;
-use std::io::Write;
+use std::io::Cursor;
 
 pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
     let _ = tokio::spawn(async move {
@@ -36,10 +35,11 @@ pub fn subscribe(channel: String) -> Result<(), Box<dyn Error>> {
                         // message_handler::handle(message_obj);
                     }
                     "binary_channel_prover" => {
-                        println!("received message ");
-                        let paylaod = msg.get_payload_bytes();
-                        let message_obj: ProverMessage<N> = bincode::deserialize(paylaod).unwrap();
-                        println!("subcribe message 11111111111....{:?}", message_obj);
+                        let mut payload = msg.get_payload_bytes();
+                        println!("submessage paylaod is {:?}", payload.clone());
+                        // let mut buff = Cursor::new(payload);
+                        let msg: ProverMessage = ProverMessage::deserialize(&mut payload).unwrap();
+                        println!("subcribe message 11111111111....{:?}", msg);
                     }
                     // message::SUB_PROVER_SPEC_MESSAGE => {
                     //     let paylaod = msg.get_payload_bytes();

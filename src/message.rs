@@ -100,14 +100,16 @@ impl ProveSpecMessage {
     }
 }
 
-#[derive(EnumString, Display, Debug, Serialize, Deserialize)]
-pub enum ProverMessage<N> {
+#[derive(Display, Debug, Serialize, Deserialize)]
+pub enum ProverMessage {
     Notify(BlockTemplate, u64),
     Submit(u32, u64, u64),
     Canary,
 }
+#[allow(dead_code)]
+static VERSION: u16 = 1;
 
-impl<N> ProverMessage<N> {
+impl ProverMessage {
     #[allow(dead_code)]
     pub fn version() -> &'static u16 {
         &VERSION
@@ -116,7 +118,7 @@ impl<N> ProverMessage<N> {
         match self {
             ProverMessage::Notify(..) => 1,
             ProverMessage::Submit(..) => 2,
-            ProverMessage::Canary => 4,
+            ProverMessage::Canary => 3,
         }
     }
 
@@ -149,40 +151,37 @@ impl<N> ProverMessage<N> {
 
     /// Serializes the given message into bytes.
     #[inline]
-    pub fn serialize_into<W: Write>(&self, writer: &mut W) -> Result<()> {
+    pub fn serialize_into<W: Write + std::fmt::Debug>(&self, writer: &mut W) -> Result<()> {
         writer.write_all(&self.id().to_le_bytes()[..])?;
-
+        // let id = self.id();
+        // bincode::serialize_into(&mut *writer, &id)?;
+        println!("serial_data is {:?}", writer);
         self.serialize_data_into(writer)
     }
 
     // Deserializes the given buffer into a message.
     #[inline]
-    pub fn deserialize<R: Read + Seek>(reader: &mut R) -> Result<Self> {
-        // Read the message ID.
-        let id: u16 = bincode::deserialize_from(&mut *reader)?;
-
-        // Helper function to read all the remaining bytes from a reader.
-        let read_to_end = |reader: &mut R| -> Result<Bytes> {
-            let mut data = vec![];
-            reader.read_to_end(&mut data)?;
-
-            Ok(data.into())
-        };
-
+    pub fn deserialize<R: Clone + Read + std::fmt::Debug>(reader: &mut R) -> Result<Self> {
+        // // Read the message ID.
+        println!("deserialize data is {:?}", reader.clone());
+        let id: u8 = bincode::deserialize_from(&mut *reader)?;
+        println!("deserialization number is {}", id);
         // Deserialize the data field.
-        let message = match id {
-            0 => Self::Notify(
-                bincode::deserialize_from(&mut *reader)?,
-                bincode::deserialize_from(&mut *reader)?,
-            ),
-            1 => Self::Submit(
-                bincode::deserialize_from(&mut *reader)?,
-                bincode::deserialize_from(&mut *reader)?,
-                bincode::deserialize_from(&mut *reader)?,
-            ),
-            _ => return Err(("Invalid message ID")),
-        };
+        // let id = 0;
 
+        let message = match id {
+            1 => Self::Notify(
+                bincode::deserialize_from(&mut *reader)?,
+                bincode::deserialize_from(&mut *reader)?,
+            ),
+            2 => Self::Submit(
+                bincode::deserialize_from(&mut *reader)?,
+                bincode::deserialize_from(&mut *reader)?,
+                bincode::deserialize_from(&mut *reader)?,
+            ),
+            _ => return Err(anyhow!("Invalid message ID {}", id)),
+        };
+        println!("message is {:?}", message);
         Ok(message)
     }
 }
